@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZEAR VAULT</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #17212b; color: white; padding: 20px; }
+        h2 { text-align: center; }
+        .file-item { background: #232e3c; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .file-name { font-weight: bold; }
+        .file-info { font-size: 0.8em; color: #7f91a4; }
+        .error { color: #ff6b6b; text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>🔐 OZEAR VAULT</h2>
+    <div id="fileList">در حال بارگذاری...</div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        async function loadFiles() {
+            const container = document.getElementById('fileList');
+            try {
+                const files = await tg.Serverless.call('getFiles', {});
+                
+                if (files.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">گاوصندوق خالی است.</p>';
+                    return;
+                }
+
+                container.innerHTML = files.map(f => `
+                    <div class="file-item">
+                        <div>
+                            <div class="file-name">${f.name}</div>
+                            <div class="file-info">${f.type} - ${(f.size / 1024).toFixed(1)} KB</div>
+                        </div>
+                        <div>📥</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="error">خطا: ${e.message}</p>`;
+            }
+        }
+
+        loadFiles();
+    </script>
+</body>
+</html>
